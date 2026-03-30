@@ -1,0 +1,11 @@
+
+  # Banki
+
+  This is a code bundle for Banki. The original project is available at https://www.figma.com/design/4MSLtwBpKREPGEuoKCS8N3/Banki.
+
+  ## Running the code
+
+  Run `npm i` to install the dependencies.
+
+  Run `npm run dev` to start the development server.
+  
