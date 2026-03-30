@@ -1,8 +1,9 @@
 import svgPaths from "../imports/svg-owukadl8i2";
 import svgPathsDetails from "../imports/svg-r7tapkz4ze";
 import svgPathsEmpty from "../imports/svg-astonr9c6z";
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 
 interface Employee {
   id: string;
@@ -13,7 +14,19 @@ interface Employee {
   categoryBg: string;
   hasMessages: boolean;
   hasTimeAlert: boolean;
+  education: string;
+  experience: string;
 }
+
+type SortOption = 'default' | 'name-asc' | 'name-desc' | 'category' | 'id';
+
+const sortLabels: Record<SortOption, string> = {
+  'default': 'По умолчанию',
+  'name-asc': 'Имя (А-Я)',
+  'name-desc': 'Имя (Я-А)',
+  'category': 'Категория',
+  'id': 'По ID',
+};
 
 interface EmployeeListPageProps {
   selectedSector: string;
@@ -23,6 +36,19 @@ interface EmployeeListPageProps {
 export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPageProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
+  const [sortOption, setSortOption] = useState<SortOption>('default');
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
+        setSortDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const employees: Employee[] = [
     {
@@ -33,7 +59,9 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
       category: 'C-1',
       categoryBg: '#2563eb',
       hasMessages: true,
-      hasTimeAlert: true
+      hasTimeAlert: true,
+      education: 'КазУМОиМЯ им. Абылай хана — Международные отношения',
+      experience: '16 лет в сфере государственных финансов и бюджетирования'
     },
     {
       id: '2',
@@ -43,7 +71,9 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
       category: 'C-1',
       categoryBg: '#2563eb',
       hasMessages: true,
-      hasTimeAlert: true
+      hasTimeAlert: true,
+      education: 'КазНУ им. Аль-Фараби — Экономика',
+      experience: '12 лет в сфере финансового анализа'
     },
     {
       id: '3',
@@ -53,7 +83,9 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
       category: 'C-2',
       categoryBg: '#10b981',
       hasMessages: true,
-      hasTimeAlert: true
+      hasTimeAlert: true,
+      education: 'ЕНУ им. Гумилёва — Государственное управление',
+      experience: '8 лет в сфере бюджетного планирования'
     },
     {
       id: '4',
@@ -63,7 +95,9 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
       category: 'C-1',
       categoryBg: '#2563eb',
       hasMessages: true,
-      hasTimeAlert: true
+      hasTimeAlert: true,
+      education: 'КИМЭП — Финансы и учёт',
+      experience: '14 лет в сфере государственного аудита'
     },
     {
       id: '5',
@@ -73,7 +107,9 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
       category: 'C-2',
       categoryBg: '#10b981',
       hasMessages: true,
-      hasTimeAlert: true
+      hasTimeAlert: true,
+      education: 'Назарбаев Университет — Public Policy',
+      experience: '6 лет в сфере налогового администрирования'
     },
     {
       id: '6',
@@ -83,7 +119,9 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
       category: 'C-2',
       categoryBg: '#10b981',
       hasMessages: true,
-      hasTimeAlert: true
+      hasTimeAlert: true,
+      education: 'КарУ им. Букетова — Юриспруденция',
+      experience: '9 лет в сфере правового обеспечения финансов'
     },
     {
       id: '7',
@@ -93,7 +131,9 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
       category: 'C-1',
       categoryBg: '#2563eb',
       hasMessages: true,
-      hasTimeAlert: true
+      hasTimeAlert: true,
+      education: 'АФ при Президенте РК — Государственные финансы',
+      experience: '18 лет в сфере макроэкономического анализа'
     },
     {
       id: '8',
@@ -102,15 +142,27 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
       empId: 'EMP-2024-008',
       category: 'C-3',
       categoryBg: '#ef4444',
-      hasMessages: false,
-      hasTimeAlert: true
+      hasMessages: true,
+      hasTimeAlert: true,
+      education: 'КБТУ — Информационные системы',
+      experience: '4 года в сфере цифровизации госуслуг'
     }
   ];
 
-  const filteredEmployees = employees.filter(employee => 
-    employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    employee.empId.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredEmployees = employees
+    .filter(employee => 
+      employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      employee.empId.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => {
+      switch (sortOption) {
+        case 'name-asc': return a.name.localeCompare(b.name, 'ru');
+        case 'name-desc': return b.name.localeCompare(a.name, 'ru');
+        case 'category': return a.category.localeCompare(b.category);
+        case 'id': return a.empId.localeCompare(b.empId);
+        default: return 0;
+      }
+    });
 
   return (
     <div className="flex flex-col h-screen bg-white">
@@ -124,7 +176,7 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
             className="flex items-center gap-2 text-[#64748b] hover:text-[#2563eb] transition-colors shrink-0"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span className="font-['Inter'] text-[14px] font-normal whitespace-nowrap">Главная</span>
+            <span className="font-['DM_Sans'] text-[16px] font-normal whitespace-nowrap">Главная</span>
           </button>
           
           <div className="h-[48px] relative flex-1">
@@ -137,7 +189,7 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="content-stretch flex items-center overflow-clip pl-[48px] pr-[16px] relative rounded-[inherit] size-full
-                    font-['Inter'] font-normal leading-[normal] not-italic text-[#1e293b] text-[16px] tracking-[-0.3125px]
+                    font-['DM_Sans'] font-normal leading-[normal] not-italic text-[#1e293b] text-[18px] tracking-[-0.3125px]
                     bg-transparent border-0 outline-none placeholder:text-[#94a3b8]"
                 />
                 <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[14px]" />
@@ -168,10 +220,10 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
               {/* Title */}
               <div className="content-stretch flex flex-col gap-[4px] h-[40px] items-start relative shrink-0 w-full">
                 <div className="h-[16px] relative shrink-0 w-full">
-                  <p className="absolute font-['Inter'] font-normal leading-[16px] left-0 not-italic text-[#64748b] text-[12px] top-px">Выбранная сфера</p>
+                  <p className="absolute font-['DM_Sans'] font-normal leading-[16px] left-0 not-italic text-[#64748b] text-[14px] top-px">Выбранная сфера</p>
                 </div>
                 <div className="h-[20px] relative shrink-0 w-full">
-                  <p className="absolute font-['Inter'] font-normal leading-[20px] left-0 not-italic text-[#1e293b] text-[14px] top-[0.5px] tracking-[-0.1504px]">
+                  <p className="absolute font-['DM_Sans'] font-normal leading-[20px] left-0 not-italic text-[#1e293b] text-[16px] top-[0.5px] tracking-[-0.1504px]">
                     {selectedSector}
                   </p>
                 </div>
@@ -182,25 +234,39 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
                 <div aria-hidden="true" className="absolute border-[#e2e8f0] border-solid border-t inset-0 pointer-events-none" />
                 <div className="h-[20px] relative shrink-0 w-[82.117px]">
                   <div className="bg-clip-padding border-0 border-[transparent] border-solid relative size-full">
-                    <p className="absolute font-['Inter'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[14px] top-[0.5px] tracking-[-0.1504px]">Найдено:</p>
+                    <p className="absolute font-['DM_Sans'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[16px] top-[0.5px] tracking-[-0.1504px]">Найдено:</p>
                     <div className="absolute content-stretch flex h-[16.5px] items-start left-[67.1px] top-[1.5px] w-[15.016px]">
-                      <p className="font-['Inter'] font-normal leading-[20px] not-italic relative shrink-0 text-[#1e293b] text-[14px] tracking-[-0.1504px]">
+                      <p className="font-['DM_Sans'] font-normal leading-[20px] not-italic relative shrink-0 text-[#1e293b] text-[16px] tracking-[-0.1504px]">
                         {filteredEmployees.length}
                       </p>
                     </div>
                   </div>
                 </div>
-                <div className="h-[20px] relative shrink-0 w-[119.438px]">
-                  <div className="bg-clip-padding border-0 border-[transparent] border-solid relative size-full">
-                    <p className="absolute font-['Inter'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[14px] top-[0.5px] tracking-[-0.1504px]">По умолчанию</p>
-                    <div className="absolute left-[103.44px] size-[16px] top-[2px]">
-                      <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16 16">
-                        <g>
-                          <path d="M4 6L8 10L12 6" stroke="#64748B" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                        </g>
-                      </svg>
+                <div className="relative" ref={sortRef}>
+                  <button
+                    onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
+                    className="flex items-center gap-[4px] hover:text-[#2563eb] transition-colors"
+                  >
+                    <p className="font-['DM_Sans'] font-normal leading-[20px] not-italic text-[#64748b] text-[16px] tracking-[-0.1504px]">{sortLabels[sortOption]}</p>
+                    <svg className={`size-[16px] transition-transform ${sortDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 16 16">
+                      <path d="M4 6L8 10L12 6" stroke="#64748B" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+                    </svg>
+                  </button>
+                  {sortDropdownOpen && (
+                    <div className="absolute right-0 top-[28px] bg-white rounded-[12px] border border-[#e2e8f0] shadow-lg z-50 min-w-[170px] py-[4px]">
+                      {(Object.keys(sortLabels) as SortOption[]).map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => { setSortOption(option); setSortDropdownOpen(false); }}
+                          className={`w-full text-left px-[12px] py-[8px] text-[15px] font-['DM_Sans'] transition-colors hover:bg-[#f1f5f9] ${
+                            sortOption === option ? 'text-[#2563eb] font-medium' : 'text-[#1e293b]'
+                          }`}
+                        >
+                          {sortLabels[option]}
+                        </button>
+                      ))}
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -230,7 +296,7 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
                       <div className="bg-gradient-to-b from-[#2563eb] relative rounded-[16777200px] shrink-0 size-[40px] to-[#1e40af]">
                         <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex items-center justify-center relative size-full">
                           <div className="h-[20px] relative shrink-0">
-                            <p className="font-['Inter'] font-normal leading-[20px] not-italic text-[14px] text-white tracking-[-0.1504px]">
+                            <p className="font-['DM_Sans'] font-normal leading-[20px] not-italic text-[16px] text-white tracking-[-0.1504px]">
                               {employee.initials}
                             </p>
                           </div>
@@ -241,13 +307,13 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
                       <div className="flex-[1_0_0] h-[40px] min-h-px min-w-px relative">
                         <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex flex-col gap-[2px] items-start relative size-full">
                           <div className="h-[20px] overflow-clip relative shrink-0 w-full">
-                            <p className="absolute font-['Inter'] font-normal leading-[20px] left-0 not-italic text-[#1e293b] text-[14px] top-[0.5px] tracking-[-0.1504px] whitespace-pre-wrap">
+                            <p className="absolute font-['DM_Sans'] font-normal leading-[20px] left-0 not-italic text-[#1e293b] text-[16px] top-[0.5px] tracking-[-0.1504px] whitespace-pre-wrap">
                               {employee.name}
                             </p>
                           </div>
                           <div className="content-stretch flex gap-[8px] h-[18px] items-center relative shrink-0 w-full">
                             <div className="h-[16px] relative shrink-0">
-                              <p className="font-['Inter'] font-normal leading-[16px] not-italic text-[#64748b] text-[12px]">
+                              <p className="font-['DM_Sans'] font-normal leading-[16px] not-italic text-[#64748b] text-[14px]">
                                 {employee.empId}
                               </p>
                             </div>
@@ -256,7 +322,7 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
                               style={{ backgroundColor: employee.categoryBg }}
                             >
                               <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex items-center justify-center overflow-clip px-[7px] py-px relative rounded-[inherit] size-full">
-                                <p className="font-['Inter'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] text-white">
+                                <p className="font-['DM_Sans'] font-medium leading-[16px] not-italic relative shrink-0 text-[14px] text-white">
                                   {employee.category}
                                 </p>
                               </div>
@@ -269,39 +335,55 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
                       <div className="relative shrink-0">
                         <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex gap-[5px] items-center relative">
                           {employee.hasMessages && (
-                            <div className="bg-white content-stretch flex flex-col items-start pb-px pt-[5px] px-[5px] relative rounded-[8px] shrink-0 size-[24px]">
-                              <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[8px]" />
-                              <div className="relative shrink-0 size-[14px]">
-                                <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 14 14">
-                                  <g>
-                                    <path d={svgPaths.p3a072400} stroke="#10B981" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.16667" />
-                                    <path d="M12.8333 5.83333V9.33333" stroke="#10B981" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.16667" />
-                                    <path d={svgPaths.p2c334740} stroke="#10B981" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.16667" />
-                                  </g>
-                                </svg>
-                              </div>
-                            </div>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="bg-white content-stretch flex flex-col items-start pb-px pt-[5px] px-[5px] relative rounded-[8px] shrink-0 size-[24px] cursor-pointer">
+                                  <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[8px]" />
+                                  <div className="relative shrink-0 size-[14px]">
+                                    <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 14 14">
+                                      <g>
+                                        <path d={svgPaths.p3a072400} stroke="#10B981" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.16667" />
+                                        <path d="M12.8333 5.83333V9.33333" stroke="#10B981" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.16667" />
+                                        <path d={svgPaths.p2c334740} stroke="#10B981" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.16667" />
+                                      </g>
+                                    </svg>
+                                  </div>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="bg-white text-[#1e293b] border border-[#e2e8f0] shadow-lg rounded-[10px] px-4 py-3 max-w-[280px]">
+                                <p className="text-[14px] font-semibold text-[#10B981] mb-1">Образование</p>
+                                <p className="text-[14px] leading-[20px] text-[#1e293b]">{employee.education}</p>
+                              </TooltipContent>
+                            </Tooltip>
                           )}
                           {employee.hasTimeAlert && (
-                            <div className="bg-white content-stretch flex flex-col items-start pb-px pt-[5px] px-[5px] relative rounded-[8px] shrink-0 size-[24px]">
-                              <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[8px]" />
-                              <div className="h-[14px] overflow-clip relative shrink-0 w-full">
-                                <div className="absolute bottom-[41.67%] left-1/2 right-[33.33%] top-1/4">
-                                  <div className="absolute inset-[-12.5%_-25.01%_-12.5%_-25%]">
-                                    <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 3.50013 5.83346">
-                                      <path d={svgPaths.pefda580} stroke="#F59E0B" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.16667" />
-                                    </svg>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="bg-white content-stretch flex flex-col items-start pb-px pt-[5px] px-[5px] relative rounded-[8px] shrink-0 size-[24px] cursor-pointer">
+                                  <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[8px]" />
+                                  <div className="h-[14px] overflow-clip relative shrink-0 w-full">
+                                    <div className="absolute bottom-[41.67%] left-1/2 right-[33.33%] top-1/4">
+                                      <div className="absolute inset-[-12.5%_-25.01%_-12.5%_-25%]">
+                                        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 3.50013 5.83346">
+                                          <path d={svgPaths.pefda580} stroke="#F59E0B" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.16667" />
+                                        </svg>
+                                      </div>
+                                    </div>
+                                    <div className="absolute inset-[8.33%]">
+                                      <div className="absolute inset-[-5%]">
+                                        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 12.8333 12.8333">
+                                          <path d={svgPaths.p13f5b400} stroke="#F59E0B" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.16667" />
+                                        </svg>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
-                                <div className="absolute inset-[8.33%]">
-                                  <div className="absolute inset-[-5%]">
-                                    <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 12.8333 12.8333">
-                                      <path d={svgPaths.p13f5b400} stroke="#F59E0B" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.16667" />
-                                    </svg>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="bg-white text-[#1e293b] border border-[#e2e8f0] shadow-lg rounded-[10px] px-4 py-3 max-w-[280px]">
+                                <p className="text-[14px] font-semibold text-[#F59E0B] mb-1">Опыт работы</p>
+                                <p className="text-[14px] leading-[20px] text-[#1e293b]">{employee.experience}</p>
+                              </TooltipContent>
+                            </Tooltip>
                           )}
                         </div>
                       </div>
@@ -345,14 +427,14 @@ function EmptyEmployeeState() {
             
             {/* Heading */}
             <div className="absolute h-[24px] left-0 top-[120px] w-[448px]">
-              <p className="-translate-x-1/2 absolute font-['Inter'] font-normal leading-[24px] left-[224.16px] not-italic text-[#1e293b] text-[16px] text-center top-[-0.5px] tracking-[-0.3125px]">
+              <p className="-translate-x-1/2 absolute font-['DM_Sans'] font-normal leading-[24px] left-[224.16px] not-italic text-[#1e293b] text-[18px] text-center top-[-0.5px] tracking-[-0.3125px]">
                 Выберите сотрудника
               </p>
             </div>
             
             {/* Description */}
             <div className="absolute h-[40px] left-0 top-[152px] w-[448px]">
-              <p className="-translate-x-1/2 absolute font-['Inter'] font-normal leading-[20px] left-[224.1px] not-italic text-[#64748b] text-[14px] text-center top-[0.5px] tracking-[-0.1504px] w-[412px] whitespace-pre-wrap">
+              <p className="-translate-x-1/2 absolute font-['DM_Sans'] font-normal leading-[20px] left-[224.1px] not-italic text-[#64748b] text-[16px] text-center top-[0.5px] tracking-[-0.1504px] w-[412px] whitespace-pre-wrap">
                 Нажмите на имя сотрудника из списка слева для просмотра подробной информации
               </p>
             </div>
@@ -384,14 +466,14 @@ function EmployeeDetails({ employeeId, employees }: EmployeeDetailsProps) {
             <div className="absolute h-[174px] left-[120px] top-0 w-[502px]">
               {/* Name */}
               <div className="absolute h-[32px] left-0 top-0 w-[502px]">
-                <p className="absolute font-['Inter'] font-normal leading-[32px] left-0 not-italic text-[#1e293b] text-[24px] top-0 tracking-[0.0703px]">
+                <p className="absolute font-['DM_Sans'] font-normal leading-[32px] left-0 not-italic text-[#1e293b] text-[28px] top-0 tracking-[0.0703px]">
                   {employee.name}
                 </p>
               </div>
               
               {/* Position */}
               <div className="absolute h-[24px] left-0 top-[36px] w-[502px]">
-                <p className="absolute font-['Inter'] font-normal leading-[24px] left-0 not-italic text-[#64748b] text-[16px] top-[-0.5px] tracking-[-0.3125px]">
+                <p className="absolute font-['DM_Sans'] font-normal leading-[24px] left-0 not-italic text-[#64748b] text-[18px] top-[-0.5px] tracking-[-0.3125px]">
                   Главный специалист отдела бюджетного планирования
                 </p>
               </div>
@@ -403,13 +485,13 @@ function EmployeeDetails({ employeeId, employees }: EmployeeDetailsProps) {
                   style={{ backgroundColor: employee.categoryBg }}
                 >
                   <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex items-center justify-center overflow-clip px-[13px] py-[5px] relative rounded-[inherit] size-full">
-                    <p className="font-['Inter'] font-medium leading-[16px] not-italic relative shrink-0 text-[12px] text-white">
+                    <p className="font-['DM_Sans'] font-medium leading-[16px] not-italic relative shrink-0 text-[14px] text-white">
                       Категория {employee.category}
                     </p>
                   </div>
                 </div>
                 <div className="h-[20px] relative shrink-0">
-                  <p className="font-['Inter'] font-normal leading-[20px] not-italic text-[#64748b] text-[14px] tracking-[-0.1504px]">
+                  <p className="font-['DM_Sans'] font-normal leading-[20px] not-italic text-[#64748b] text-[16px] tracking-[-0.1504px]">
                     ID: {employee.empId}
                   </p>
                 </div>
@@ -430,10 +512,10 @@ function EmployeeDetails({ employeeId, employees }: EmployeeDetailsProps) {
                     </svg>
                   </div>
                   <div className="h-[20px] relative shrink-0">
-                    <p className="font-['Inter'] font-normal leading-[20px] not-italic text-[#64748b] text-[14px] tracking-[-0.1504px]">Возраст:</p>
+                    <p className="font-['DM_Sans'] font-normal leading-[20px] not-italic text-[#64748b] text-[16px] tracking-[-0.1504px]">Возраст:</p>
                   </div>
                   <div className="h-[20px] relative shrink-0">
-                    <p className="font-['Inter'] font-normal leading-[20px] not-italic text-[#1e293b] text-[14px] tracking-[-0.1504px]">38 лет</p>
+                    <p className="font-['DM_Sans'] font-normal leading-[20px] not-italic text-[#1e293b] text-[16px] tracking-[-0.1504px]">38 лет</p>
                   </div>
                 </div>
                 
@@ -453,10 +535,10 @@ function EmployeeDetails({ employeeId, employees }: EmployeeDetailsProps) {
                     </svg>
                   </div>
                   <div className="h-[20px] relative shrink-0">
-                    <p className="font-['Inter'] font-normal leading-[20px] not-italic text-[#64748b] text-[14px] tracking-[-0.1504px]">Стаж:</p>
+                    <p className="font-['DM_Sans'] font-normal leading-[20px] not-italic text-[#64748b] text-[16px] tracking-[-0.1504px]">Стаж:</p>
                   </div>
                   <div className="h-[20px] relative shrink-0">
-                    <p className="font-['Inter'] font-normal leading-[20px] not-italic text-[#1e293b] text-[14px] tracking-[-0.1504px]">16 лет</p>
+                    <p className="font-['DM_Sans'] font-normal leading-[20px] not-italic text-[#1e293b] text-[16px] tracking-[-0.1504px]">16 лет</p>
                   </div>
                 </div>
                 
@@ -471,10 +553,10 @@ function EmployeeDetails({ employeeId, employees }: EmployeeDetailsProps) {
                     </svg>
                   </div>
                   <div className="h-[20px] relative shrink-0">
-                    <p className="font-['Inter'] font-normal leading-[20px] not-italic text-[#64748b] text-[14px] tracking-[-0.1504px]">Национальность:</p>
+                    <p className="font-['DM_Sans'] font-normal leading-[20px] not-italic text-[#64748b] text-[16px] tracking-[-0.1504px]">Национальность:</p>
                   </div>
                   <div className="h-[20px] relative shrink-0">
-                    <p className="font-['Inter'] font-normal leading-[20px] not-italic text-[#1e293b] text-[14px] tracking-[-0.1504px]">Казах</p>
+                    <p className="font-['DM_Sans'] font-normal leading-[20px] not-italic text-[#1e293b] text-[16px] tracking-[-0.1504px]">Казах</p>
                   </div>
                 </div>
                 
@@ -494,10 +576,10 @@ function EmployeeDetails({ employeeId, employees }: EmployeeDetailsProps) {
                     </svg>
                   </div>
                   <div className="h-[20px] relative shrink-0">
-                    <p className="font-['Inter'] font-normal leading-[20px] not-italic text-[#64748b] text-[14px] tracking-[-0.1504px]">Орган:</p>
+                    <p className="font-['DM_Sans'] font-normal leading-[20px] not-italic text-[#64748b] text-[16px] tracking-[-0.1504px]">Орган:</p>
                   </div>
                   <div className="flex-[1_0_0] h-[32px] min-h-px min-w-px relative">
-                    <p className="font-['Inter'] font-normal leading-[16px] not-italic text-[#1e293b] text-[12px]">
+                    <p className="font-['DM_Sans'] font-normal leading-[16px] not-italic text-[#1e293b] text-[14px]">
                       Министерство финансов Республики Казахстан
                     </p>
                   </div>
@@ -510,7 +592,7 @@ function EmployeeDetails({ employeeId, employees }: EmployeeDetailsProps) {
               <div className="content-stretch flex items-start overflow-clip p-[2px] relative rounded-[inherit] size-full">
                 <div className="bg-gradient-to-b flex-[1_0_0] from-[#2563eb] h-[92px] min-h-px min-w-px relative rounded-[16777200px] to-[#1e40af]">
                   <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex items-center justify-center relative size-full">
-                    <p className="font-['Inter'] font-normal leading-[32px] not-italic relative shrink-0 text-[24px] text-white tracking-[0.0703px]">
+                    <p className="font-['DM_Sans'] font-normal leading-[32px] not-italic relative shrink-0 text-[28px] text-white tracking-[0.0703px]">
                       {employee.initials}
                     </p>
                   </div>
@@ -541,7 +623,7 @@ function EmployeeDetails({ employeeId, employees }: EmployeeDetailsProps) {
               </div>
             </div>
             <div className="h-[28px] relative shrink-0">
-              <p className="font-['Inter'] font-normal leading-[28px] not-italic text-[#1e293b] text-[18px] tracking-[-0.4395px]">
+              <p className="font-['DM_Sans'] font-normal leading-[28px] not-italic text-[#1e293b] text-[22px] tracking-[-0.4395px]">
                 Опыт работы
               </p>
             </div>
@@ -554,22 +636,22 @@ function EmployeeDetails({ employeeId, employees }: EmployeeDetailsProps) {
             {/* Position 1 */}
             <div className="h-[100px] relative shrink-0 w-full">
               <div className="absolute h-[20px] left-0 top-0 w-[576px]">
-                <p className="absolute font-['Inter'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[14px] top-[0.5px] tracking-[-0.1504px]">
+                <p className="absolute font-['DM_Sans'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[16px] top-[0.5px] tracking-[-0.1504px]">
                   2018 — настоящее время • 6 лет
                 </p>
               </div>
               <div className="absolute h-[24px] left-0 top-[24px] w-[576px]">
-                <p className="absolute font-['Inter'] font-normal leading-[24px] left-0 not-italic text-[#1e293b] text-[16px] top-[-0.5px] tracking-[-0.3125px]">
+                <p className="absolute font-['DM_Sans'] font-normal leading-[24px] left-0 not-italic text-[#1e293b] text-[18px] top-[-0.5px] tracking-[-0.3125px]">
                   Главный специалист отдела бюджетного планирования
                 </p>
               </div>
               <div className="absolute h-[20px] left-0 top-[52px] w-[576px]">
-                <p className="absolute font-['Inter'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[14px] top-[0.5px] tracking-[-0.1504px]">
+                <p className="absolute font-['DM_Sans'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[16px] top-[0.5px] tracking-[-0.1504px]">
                   Министерство финансов Республики Казахстан
                 </p>
               </div>
               <div className="absolute h-[20px] left-0 top-[80px] w-[576px]">
-                <p className="absolute font-['Inter'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[14px] top-[0.5px] tracking-[-0.1504px]">
+                <p className="absolute font-['DM_Sans'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[16px] top-[0.5px] tracking-[-0.1504px]">
                   12 лет в сфере государственных финансов и бюджетирования
                 </p>
               </div>
@@ -579,17 +661,17 @@ function EmployeeDetails({ employeeId, employees }: EmployeeDetailsProps) {
             {/* Position 2 */}
             <div className="h-[72px] relative shrink-0 w-full">
               <div className="absolute h-[20px] left-0 top-0 w-[576px]">
-                <p className="absolute font-['Inter'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[14px] top-[0.5px] tracking-[-0.1504px]">
+                <p className="absolute font-['DM_Sans'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[16px] top-[0.5px] tracking-[-0.1504px]">
                   2015 — 2018 • 3 года
                 </p>
               </div>
               <div className="absolute h-[24px] left-0 top-[24px] w-[576px]">
-                <p className="absolute font-['Inter'] font-normal leading-[24px] left-0 not-italic text-[#1e293b] text-[16px] top-[-0.5px] tracking-[-0.3125px]">
+                <p className="absolute font-['DM_Sans'] font-normal leading-[24px] left-0 not-italic text-[#1e293b] text-[18px] top-[-0.5px] tracking-[-0.3125px]">
                   Специалист отдела анализа
                 </p>
               </div>
               <div className="absolute h-[20px] left-0 top-[52px] w-[576px]">
-                <p className="absolute font-['Inter'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[14px] top-[0.5px] tracking-[-0.1504px]">
+                <p className="absolute font-['DM_Sans'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[16px] top-[0.5px] tracking-[-0.1504px]">
                   Департамент финансов
                 </p>
               </div>
@@ -599,17 +681,17 @@ function EmployeeDetails({ employeeId, employees }: EmployeeDetailsProps) {
             {/* Position 3 */}
             <div className="h-[72px] relative shrink-0 w-full">
               <div className="absolute h-[20px] left-0 top-0 w-[576px]">
-                <p className="absolute font-['Inter'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[14px] top-[0.5px] tracking-[-0.1504px]">
+                <p className="absolute font-['DM_Sans'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[16px] top-[0.5px] tracking-[-0.1504px]">
                   2012 — 2015 • 3 года
                 </p>
               </div>
               <div className="absolute h-[24px] left-0 top-[24px] w-[576px]">
-                <p className="absolute font-['Inter'] font-normal leading-[24px] left-0 not-italic text-[#1e293b] text-[16px] top-[-0.5px] tracking-[-0.3125px]">
+                <p className="absolute font-['DM_Sans'] font-normal leading-[24px] left-0 not-italic text-[#1e293b] text-[18px] top-[-0.5px] tracking-[-0.3125px]">
                   Младший специалист
                 </p>
               </div>
               <div className="absolute h-[20px] left-0 top-[52px] w-[576px]">
-                <p className="absolute font-['Inter'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[14px] top-[0.5px] tracking-[-0.1504px]">
+                <p className="absolute font-['DM_Sans'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[16px] top-[0.5px] tracking-[-0.1504px]">
                   Министерство экономики
                 </p>
               </div>
@@ -638,7 +720,7 @@ function EmployeeDetails({ employeeId, employees }: EmployeeDetailsProps) {
               </div>
             </div>
             <div className="h-[28px] relative shrink-0">
-              <p className="font-['Inter'] font-normal leading-[28px] not-italic text-[#1e293b] text-[18px] tracking-[-0.4395px]">
+              <p className="font-['DM_Sans'] font-normal leading-[28px] not-italic text-[#1e293b] text-[22px] tracking-[-0.4395px]">
                 Образование
               </p>
             </div>
@@ -647,12 +729,12 @@ function EmployeeDetails({ employeeId, employees }: EmployeeDetailsProps) {
           <div className="absolute bg-[#f9fafb] content-stretch flex flex-col gap-[8px] h-[86px] items-start left-[44px] pb-px pt-[17px] px-[17px] rounded-[14px] top-[56px] w-[578px]">
             <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[14px]" />
             <div className="h-[24px] relative shrink-0 w-full">
-              <p className="absolute font-['Inter'] font-normal leading-[24px] left-0 not-italic text-[#1e293b] text-[16px] top-[-0.5px] tracking-[-0.3125px]">
+              <p className="absolute font-['DM_Sans'] font-normal leading-[24px] left-0 not-italic text-[#1e293b] text-[18px] top-[-0.5px] tracking-[-0.3125px]">
                 Высшее экономическое, КазНУ им. Аль-Фараби, Экономика
               </p>
             </div>
             <div className="h-[20px] relative shrink-0 w-full">
-              <p className="absolute font-['Inter'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[14px] top-[0.5px] tracking-[-0.1504px]">
+              <p className="absolute font-['DM_Sans'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[16px] top-[0.5px] tracking-[-0.1504px]">
                 Государственный диплом
               </p>
             </div>
@@ -678,7 +760,7 @@ function EmployeeDetails({ employeeId, employees }: EmployeeDetailsProps) {
               </div>
             </div>
             <div className="h-[28px] relative shrink-0">
-              <p className="font-['Inter'] font-normal leading-[28px] not-italic text-[#1e293b] text-[18px] tracking-[-0.4395px]">
+              <p className="font-['DM_Sans'] font-normal leading-[28px] not-italic text-[#1e293b] text-[22px] tracking-[-0.4395px]">
                 Профессиональные навыки
               </p>
             </div>
@@ -688,7 +770,7 @@ function EmployeeDetails({ employeeId, employees }: EmployeeDetailsProps) {
             {['Финансовый анализ', 'Бюджетирование', 'Excel (продвинутый)', '1С Бухгалтерия', 'Налоговая отчётность', 'Казначейство'].map((skill, idx) => (
               <div key={idx} className="bg-white h-[22px] relative rounded-[8px]">
                 <div className="content-stretch flex items-center justify-center overflow-clip px-[9px] py-[3px] relative rounded-[inherit] size-full">
-                  <p className="font-['Inter'] font-medium leading-[16px] not-italic relative shrink-0 text-[#1e293b] text-[12px]">
+                  <p className="font-['DM_Sans'] font-medium leading-[16px] not-italic relative shrink-0 text-[#1e293b] text-[14px]">
                     {skill}
                   </p>
                 </div>
