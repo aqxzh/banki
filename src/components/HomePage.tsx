@@ -296,10 +296,10 @@ export function HomePage({ onSectorSelect }: HomePageProps) {
                 <Shield className="w-6 h-6 text-white" strokeWidth={2} />
               </div>
               <div>
-                <h1 className="font-['Inter'] text-[24px] font-semibold text-[#0F172A] tracking-[-0.02em]">
+                <h1 className="font-['DM_Sans'] text-[28px] font-semibold text-[#0F172A] tracking-[-0.02em]">
                   Система управления персоналом
                 </h1>
-                <p className="font-['Inter'] text-[14px] font-normal text-[#64748B] mt-0.5">
+                <p className="font-['DM_Sans'] text-[16px] font-normal text-[#64748B] mt-0.5">
                   Государственные службы Республики Казахстан
                 </p>
               </div>
@@ -308,11 +308,11 @@ export function HomePage({ onSectorSelect }: HomePageProps) {
             {/* User Info */}
             <div className="flex items-center gap-3 px-4 py-2 bg-[#F8FAFC] rounded-[10px] border border-[#E2E8F0]">
               <div className="w-9 h-9 bg-gradient-to-br from-[#64748B] to-[#475569] rounded-full flex items-center justify-center">
-                <span className="font-['Inter'] text-[14px] font-semibold text-white">АК</span>
+                <span className="font-['DM_Sans'] text-[16px] font-semibold text-white">АК</span>
               </div>
               <div>
-                <p className="font-['Inter'] text-[13px] font-medium text-[#0F172A]">Администратор</p>
-                <p className="font-['Inter'] text-[12px] text-[#64748B]">admin@gov.kz</p>
+                <p className="font-['DM_Sans'] text-[15px] font-medium text-[#0F172A]">Администратор</p>
+                <p className="font-['DM_Sans'] text-[14px] text-[#64748B]">admin@gov.kz</p>
               </div>
             </div>
           </div>
@@ -326,10 +326,10 @@ export function HomePage({ onSectorSelect }: HomePageProps) {
                   <Users className="w-6 h-6 text-white" strokeWidth={2} />
                 </div>
                 <div>
-                  <p className="font-['Inter'] text-[13px] font-normal text-[#64748B] mb-0.5">
+                  <p className="font-['DM_Sans'] text-[15px] font-normal text-[#64748B] mb-0.5">
                     Всего сотрудников
                   </p>
-                  <p className="font-['Inter'] text-[24px] font-semibold text-[#0F172A] tracking-tight">
+                  <p className="font-['DM_Sans'] text-[28px] font-semibold text-[#0F172A] tracking-tight">
                     {totalEmployees.toLocaleString('ru-RU')}
                   </p>
                 </div>
@@ -343,10 +343,10 @@ export function HomePage({ onSectorSelect }: HomePageProps) {
                   <Layers className="w-6 h-6 text-white" strokeWidth={2} />
                 </div>
                 <div>
-                  <p className="font-['Inter'] text-[13px] font-normal text-[#64748B] mb-0.5">
+                  <p className="font-['DM_Sans'] text-[15px] font-normal text-[#64748B] mb-0.5">
                     Сфер деятельности
                   </p>
-                  <p className="font-['Inter'] text-[24px] font-semibold text-[#0F172A] tracking-tight">
+                  <p className="font-['DM_Sans'] text-[28px] font-semibold text-[#0F172A] tracking-tight">
                     27
                   </p>
                 </div>
@@ -360,10 +360,10 @@ export function HomePage({ onSectorSelect }: HomePageProps) {
                   <Calendar className="w-6 h-6 text-white" strokeWidth={2} />
                 </div>
                 <div>
-                  <p className="font-['Inter'] text-[13px] font-normal text-[#64748B] mb-0.5">
+                  <p className="font-['DM_Sans'] text-[15px] font-normal text-[#64748B] mb-0.5">
                     Последнее обновление
                   </p>
-                  <p className="font-['Inter'] text-[15px] font-semibold text-[#0F172A]">
+                  <p className="font-['DM_Sans'] text-[17px] font-semibold text-[#0F172A]">
                     17 февраля 2026 г.
                   </p>
                 </div>
@@ -380,7 +380,7 @@ export function HomePage({ onSectorSelect }: HomePageProps) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-[48px] pl-12 pr-4 bg-white border border-[#E2E8F0] rounded-[12px]
-                font-['Inter'] text-[15px] text-[#1E293B] placeholder:text-[#94A3B8]
+                font-['DM_Sans'] text-[17px] text-[#1E293B] placeholder:text-[#94A3B8]
                 focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent
                 transition-all duration-200"
             />
@@ -396,14 +396,14 @@ export function HomePage({ onSectorSelect }: HomePageProps) {
             <button
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
-              className={`px-5 py-2.5 rounded-[10px] font-['Inter'] text-[14px] font-medium transition-all duration-200
+              className={`px-5 py-2.5 rounded-[10px] font-['DM_Sans'] text-[16px] font-medium transition-all duration-200
                 ${selectedCategory === category.id 
                   ? 'bg-[#2563EB] text-white shadow-sm' 
                   : 'text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A]'
                 }`}
             >
               {category.name}
-              <span className={`ml-2 px-2 py-0.5 rounded-full text-[12px] font-normal
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-[14px] font-normal
                 ${selectedCategory === category.id 
                   ? 'bg-white/20 text-white' 
                   : 'bg-[#F1F5F9] text-[#64748B]'
@@ -445,7 +445,7 @@ export function HomePage({ onSectorSelect }: HomePageProps) {
 
                     {/* Text */}
                     <div>
-                      <h3 className="font-['Inter'] text-[15px] font-semibold text-[#0F172A] leading-[1.4] mb-3
+                      <h3 className="font-['DM_Sans'] text-[17px] font-semibold text-[#0F172A] leading-[1.4] mb-3
                         group-hover:text-[#2563EB] transition-colors duration-200">
                         {sector.name}
                       </h3>
@@ -453,13 +453,13 @@ export function HomePage({ onSectorSelect }: HomePageProps) {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 text-[#64748B]">
                           <Users className="w-4 h-4" strokeWidth={2} />
-                          <span className="font-['Inter'] text-[14px] font-medium">
+                          <span className="font-['DM_Sans'] text-[16px] font-medium">
                             {employeeCount}
                           </span>
                         </div>
                         
                         <div className="flex items-center gap-1 text-[#2563EB] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                          <span className="font-['Inter'] text-[13px] font-medium">Открыть</span>
+                          <span className="font-['DM_Sans'] text-[15px] font-medium">Открыть</span>
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                           </svg>
@@ -473,7 +473,7 @@ export function HomePage({ onSectorSelect }: HomePageProps) {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="font-['Inter'] text-[15px] text-[#64748B]">
+            <p className="font-['DM_Sans'] text-[17px] text-[#64748B]">
               Сферы не найдены. Попробуйте изменить запрос.
             </p>
           </div>
