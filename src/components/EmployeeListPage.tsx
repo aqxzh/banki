@@ -218,15 +218,11 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
             <div aria-hidden="true" className="absolute border-[#e2e8f0] border-b border-solid inset-0 pointer-events-none" />
             <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex flex-col gap-[12px] items-start pb-px pt-[24px] px-[24px] relative size-full">
               {/* Title */}
-              <div className="content-stretch flex flex-col gap-[4px] h-[40px] items-start relative shrink-0 w-full">
-                <div className="h-[16px] relative shrink-0 w-full">
-                  <p className="absolute font-['DM_Sans'] font-normal leading-[16px] left-0 not-italic text-[#64748b] text-[14px] top-px">Выбранная сфера</p>
-                </div>
-                <div className="h-[20px] relative shrink-0 w-full">
-                  <p className="absolute font-['DM_Sans'] font-normal leading-[20px] left-0 not-italic text-[#1e293b] text-[16px] top-[0.5px] tracking-[-0.1504px]">
-                    {selectedSector}
-                  </p>
-                </div>
+              <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0 w-full">
+                <p className="font-['DM_Sans'] font-normal leading-[16px] not-italic text-[#64748b] text-[14px]">Выбранная сфера</p>
+                <p className="font-['DM_Sans'] font-normal leading-[20px] not-italic text-[#1e293b] text-[16px] tracking-[-0.1504px]">
+                  {selectedSector}
+                </p>
               </div>
 
               {/* Stats */}
