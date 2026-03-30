@@ -226,8 +226,8 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
               </div>
 
               {/* Stats */}
-              <div className="content-stretch flex h-[57px] items-center justify-between pt-px relative shrink-0 w-full">
-                <div aria-hidden="true" className="absolute border-[#e2e8f0] border-solid border-t inset-0 pointer-events-none" />
+              <div className="content-stretch flex items-center justify-between pt-[16px] pb-[8px] relative shrink-0 w-full">
+                <div aria-hidden="true" className="absolute border-[#e2e8f0] border-solid border-t inset-x-0 top-0 pointer-events-none" />
                 <div className="h-[20px] relative shrink-0 w-[82.117px]">
                   <div className="bg-clip-padding border-0 border-[transparent] border-solid relative size-full">
                     <p className="absolute font-['DM_Sans'] font-normal leading-[20px] left-0 not-italic text-[#64748b] text-[16px] top-[0.5px] tracking-[-0.1504px]">Найдено:</p>
@@ -300,13 +300,11 @@ export function EmployeeListPage({ selectedSector, onBack }: EmployeeListPagePro
                       </div>
 
                       {/* Info */}
-                      <div className="flex-[1_0_0] h-[40px] min-h-px min-w-px relative">
-                        <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex flex-col gap-[2px] items-start relative size-full">
-                          <div className="h-[20px] overflow-clip relative shrink-0 w-full">
-                            <p className="absolute font-['DM_Sans'] font-normal leading-[20px] left-0 not-italic text-[#1e293b] text-[16px] top-[0.5px] tracking-[-0.1504px] whitespace-pre-wrap">
-                              {employee.name}
-                            </p>
-                          </div>
+                      <div className="flex-[1_0_0] min-w-0 relative">
+                        <div className="flex flex-col gap-[2px] items-start">
+                          <p className="font-['DM_Sans'] font-normal leading-[20px] not-italic text-[#1e293b] text-[16px] tracking-[-0.1504px] text-left truncate w-full">
+                            {employee.name}
+                          </p>
                           <div className="content-stretch flex gap-[8px] h-[18px] items-center relative shrink-0 w-full">
                             <div className="h-[16px] relative shrink-0">
                               <p className="font-['DM_Sans'] font-normal leading-[16px] not-italic text-[#64748b] text-[14px]">
