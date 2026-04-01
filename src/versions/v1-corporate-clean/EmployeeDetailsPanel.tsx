@@ -1,7 +1,7 @@
 import { User, Award, Briefcase, TrendingUp, FileText, Calendar, MapPin, CheckCircle2, Star } from 'lucide-react';
-import { Badge } from './ui/badge';
-import { Avatar, AvatarFallback } from './ui/avatar';
-import { Progress } from './ui/progress';
+import { Badge } from '../../components/ui/badge';
+import { Avatar, AvatarFallback } from '../../components/ui/avatar';
+import { Progress } from '../../components/ui/progress';
 
 interface EmployeeDetailsPanelProps {
   employee: {

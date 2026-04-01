@@ -1,15 +1,15 @@
 import { GraduationCap, Clock, Search, Filter, Shield, ChevronDown } from 'lucide-react';
 import { useState, useMemo } from 'react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from './ui/sheet';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from '../../components/ui/sheet';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../components/ui/tooltip';
 import { EmployeeDetailsPanel } from './EmployeeDetailsPanel';
-import { Badge } from './ui/badge';
+import { Badge } from '../../components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu';
+} from '../../components/ui/dropdown-menu';
 
 interface MockEmployee {
   name: string;
